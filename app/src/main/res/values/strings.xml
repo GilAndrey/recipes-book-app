@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Recipes</string>
+    <string name="app_title">Start Cooking</string>
+    <string name="unlimited_recipes">UNLIMITED PREMIUM RECIPES</string>
+    <string name="button_login">Login</string>
+    <string name="button_sing_up">Sing up</string>
+    <string name="sign_up">Sign up</string>
+    <string name="create_account">Create a new account</string>
+    <string name="user_image">User Image</string>
+    <string name="add_photo_icon">Add photo icon</string>
+    <string name="your_name">Your name</string>
+    <string name="your_e_mail">Your e-mail</string>
+    <string name="person_icon">Person Icon</string>
+    <string name="email_icon">Email Icon</string>
+    <string name="your_password">Your password</string>
+    <string name="lock_icon">Lock icon</string>
+    <string name="eye_icon">Eye Icon</string>
+    <string name="login">Login</string>
+    <string name="please_sign_in_to_continue">Please, sign in to continue</string>
+    <string name="don_t_have_account_sign_in">Don\'t have account?</string>
+    <string name="sign_in">Sign in</string>
+    <string name="button_sing_in">Sign in</string>
+    <string name="search_by_recipes">Search by recipes</string>
+    <string name="categories">Categories</string>
+</resources>

@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Receitas</string>
+    <string name="app_title">Vamos Cozinhar</string>
+    <string name="unlimited_recipes">RECEITAS PREMIUM ILIMITADAS</string>
+    <string name="button_login">Login</string>
+    <string name="button_sing_up">Registrar</string>
+    <string name="sign_up">Registrar-se</string>
+    <string name="create_account">Crie uma conta nova</string>
+    <string name="user_image">Imagem de Usuário</string>
+    <string name="add_photo_icon">Adicionar Foto Icone</string>
+    <string name="your_name">Seu nome</string>
+    <string name="your_e_mail">Seu E-mail</string>
+    <string name="person_icon">Icone de uma pessoa</string>
+    <string name="email_icon">Icone de Email</string>
+    <string name="your_password">Sua senha</string>
+    <string name="lock_icon">Icone de fechadura</string>
+    <string name="eye_icon">Icone de Olho</string>
+    <string name="login">Login</string>
+    <string name="please_sign_in_to_continue">Por favor, preencha para continuar</string>
+    <string name="don_t_have_account_sign_in">Não tem conta? <b>Registre-se</b></string>
+    <string name="sign_in">Registre-se</string>
+    <string name="button_sing_in">Entrar</string>
+    <string name="search_by_recipes">Pesquisar por receitas</string>
+    <string name="categories">Categorias</string>
+</resources>

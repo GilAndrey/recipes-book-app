@@ -1,0 +1,51 @@
+# Gradle
+.gradle/
+build/
+/build
+
+# IDE - IntelliJ / Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# Local configuration
+local.properties
+
+# Log Files
+*.log
+
+# Android Studio captures folder
+captures/
+
+# Built variants
+*.apk
+*.aar
+*.ap_
+
+# Keystore files
+*.jks
+*.keystore
+
+# External native build folder
+.externalNativeBuild
+.cxx/
+
+# Google Services info file
+google-services.json
+
+# Lint
+lint/
+
+# Generated files
+.navigation/
+
+# OS generated files
+.DS_Store
+Thumbs.db
