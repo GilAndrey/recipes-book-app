@@ -22,4 +22,5 @@
     <string name="button_sing_in">Entrar</string>
     <string name="search_by_recipes">Pesquisar por receitas</string>
     <string name="categories">Categorias</string>
+    <string name="authentication_error">Authentication error!</string>
 </resources>
