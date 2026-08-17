@@ -27,8 +27,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.recipes.R
+import br.com.fiap.recipes.model.User
+import br.com.fiap.recipes.repository.SharedPreferencesUserRepository
 import br.com.fiap.recipes.ui.theme.RecipesTheme
 
 @Composable
@@ -141,6 +148,26 @@ private fun UserImagePreview() {
 
 @Composable
 fun SignupUserForm(modifier: Modifier = Modifier) {
+
+    var name by remember {
+        mutableStateOf("")
+    }
+
+    var email by remember {
+        mutableStateOf("")
+    }
+
+    var password by remember {
+        mutableStateOf("")
+    }
+
+    // Device explorer packages - cache, code_cache, files and shared_prefs
+
+    // Instancia do SharedPreferencesUserRepository : Injeção de dependencia?
+    val userRepository =
+        SharedPreferencesUserRepository(context = LocalContext.current)
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -148,8 +175,10 @@ fun SignupUserForm(modifier: Modifier = Modifier) {
     ) {
         // Caixa de texto para nome do usuário
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = name,
+            onValueChange = {
+                name = it
+            },
             modifier = Modifier
                 .fillMaxWidth(),
             label = {
@@ -174,8 +203,10 @@ fun SignupUserForm(modifier: Modifier = Modifier) {
 
         // Caixa de texto para email
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = email,
+            onValueChange = {
+                email = it
+            },
             modifier = Modifier
                 .fillMaxWidth(),
             label = {
@@ -200,8 +231,10 @@ fun SignupUserForm(modifier: Modifier = Modifier) {
 
         // Caixa de texto para a senha
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = password,
+            onValueChange = {
+                password = it
+            },
             modifier = Modifier
                 .fillMaxWidth(),
             label = {
@@ -235,7 +268,15 @@ fun SignupUserForm(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+                userRepository.saveUser(
+                    User(
+                        name = name,
+                        email = email,
+                        password = password
+                    )
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
@@ -252,7 +293,7 @@ fun SignupUserForm(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-private fun SignupUserFrom() {
+private fun SignupUserFormPreview() {
     RecipesTheme() {
         SignupUserForm()
     }

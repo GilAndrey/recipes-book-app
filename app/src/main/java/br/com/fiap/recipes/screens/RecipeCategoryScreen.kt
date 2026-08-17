@@ -87,7 +87,6 @@ fun CategoryRecipeScreen(categoryId: Int?, navController: NavHostController?) {
             ) {
                 IconButton(
                     onClick = {
-                        println("navega...")
                         navController!!.navigate(
                             route = Destination.HomeScreen.createRoute("")
                         )
@@ -261,7 +260,7 @@ fun CategoryRecipe(recipe: Recipe) {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun CategoryRecipePreview() {
     RecipesTheme {
@@ -269,7 +268,7 @@ private fun CategoryRecipePreview() {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun CategoryRecipeScreenPreview() {
     RecipesTheme {
