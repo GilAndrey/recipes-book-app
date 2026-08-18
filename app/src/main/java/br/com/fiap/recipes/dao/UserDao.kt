@@ -11,13 +11,16 @@ import br.com.fiap.recipes.model.User
 interface UserDao {
 
     @Insert
-    fun save(user: User): Int
+    fun save(user: User): Long
 
     @Delete
     fun delete(user: User): Int
 
     @Update
     fun update(user: User): Int
+
+    @Query("SELECT * FROM tb_user WHERE id = :id")
+    fun getUser(id: Int): User
 
     @Query("SELECT * FROM tb_user WHERE id = :id")
     fun getUserById(id: Int): User?
