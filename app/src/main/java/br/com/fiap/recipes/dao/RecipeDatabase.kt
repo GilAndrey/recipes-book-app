@@ -20,7 +20,7 @@ abstract class RecipeDatabase: RoomDatabase() {
                     .databaseBuilder(
                         context,
                         RecipeDatabase::class.java,
-                        "recipe_database"
+                        "recipe_db"
                     )
                     .allowMainThreadQueries()
                     .fallbackToDestructiveMigration()

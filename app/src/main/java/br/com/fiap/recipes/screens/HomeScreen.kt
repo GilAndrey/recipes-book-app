@@ -1,7 +1,9 @@
 package br.com.fiap.recipes.screens
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,9 +41,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -60,11 +67,13 @@ import br.com.fiap.recipes.components.CategoryItem
 import br.com.fiap.recipes.components.RecipeItem
 import br.com.fiap.recipes.navigation.Destination
 import br.com.fiap.recipes.navigation.NavigationRoutes
+import br.com.fiap.recipes.repository.RoomUserRepository
 import br.com.fiap.recipes.repository.SharedPreferencesUserRepository
 import br.com.fiap.recipes.repository.UserRepository
 import br.com.fiap.recipes.repository.getAllCategories
 import br.com.fiap.recipes.repository.getAllRecipes
 import br.com.fiap.recipes.ui.theme.RecipesTheme
+import br.com.fiap.recipes.utils.convertByteArrayToBitmap
 
 @Composable
 fun HomeScreen(navController: NavHostController, email: String?) {
@@ -75,7 +84,7 @@ fun HomeScreen(navController: NavHostController, email: String?) {
     ) {
         Scaffold(
 
-            topBar = { MyTopAppBar(email!!) }, // Double Bang
+            topBar = { MyTopAppBar(email!!, navController) }, // Double Bang
             bottomBar = { MyBottomAppBar() },
 
             floatingActionButton = {
@@ -115,18 +124,24 @@ private fun HomeScreenPreview() {
 @Composable
 private fun MyTopAppBarPreview() {
     RecipesTheme() {
-        MyTopAppBar("")
+        MyTopAppBar("", rememberNavController())
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(email: String) {
+fun MyTopAppBar(email: String = "", navController: NavController) {
 
     val userRepository: UserRepository =
-        SharedPreferencesUserRepository(context = LocalContext.current)
+        RoomUserRepository(context = LocalContext.current)
 
-    val user = userRepository.getUser()
+    val user = userRepository.getUserByEmail(email)
+
+    var profileBitmap by remember {
+        mutableStateOf<Bitmap>(
+            convertByteArrayToBitmap(user!!.userImage!!)
+        )
+    }
 
     TopAppBar(
         modifier = Modifier
@@ -142,7 +157,7 @@ fun MyTopAppBar(email: String) {
             ) {
                 Column() {
                     Text(
-                        text = "Hello, ${user.name}",
+                        text = "Hello, ${user!!.name}",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
@@ -155,7 +170,15 @@ fun MyTopAppBar(email: String) {
                 }
                 Card(
                     modifier = Modifier
-                        .size(48.dp),
+                        .size(48.dp)
+                        .clickable(
+                            onClick = {
+                                navController.navigate(
+                                    route = Destination.ProfileScreen
+                                        .createRoute(email)
+                                )
+                            }
+                        ),
                     shape = CircleShape,
                     colors = CardDefaults.cardColors(
                         containerColor = Color.Transparent
@@ -166,8 +189,10 @@ fun MyTopAppBar(email: String) {
                     )
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.student),
-                        contentDescription = "User Image"
+                        bitmap = profileBitmap.asImageBitmap(),
+                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = "User Image",
+                        contentScale = ContentScale.Crop
                     )
                 }
             }

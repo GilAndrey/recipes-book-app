@@ -12,6 +12,7 @@ import br.com.fiap.recipes.screens.CategoryRecipeScreen
 import br.com.fiap.recipes.screens.HomeScreen
 import br.com.fiap.recipes.screens.InitialScreen
 import br.com.fiap.recipes.screens.LoginScreen
+import br.com.fiap.recipes.screens.ProfileScreen
 import br.com.fiap.recipes.screens.SignupScreen
 
 @Composable
@@ -46,8 +47,19 @@ fun NavigationRoutes() {
         composable(route = Destination.SignupScreen.route) {
             SignupScreen(navController)
         }
+
         composable(route = Destination.LoginScreen.route) {
             LoginScreen(navController)
+        }
+
+        composable(
+            route = Destination.ProfileScreen.route,
+            arguments = listOf(navArgument("email") {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            var email = backStackEntry.arguments?.getString("email")
+            ProfileScreen(navController, email)
         }
 
         composable(

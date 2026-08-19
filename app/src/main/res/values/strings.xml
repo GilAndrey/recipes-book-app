@@ -23,4 +23,7 @@
     <string name="search_by_recipes">Search by recipes</string>
     <string name="categories">Categories</string>
     <string name="authentication_error">Authentication error!</string>
+    <string name="profile">Profile</string>
+    <string name="user_profile_details">User profile details</string>
+    <string name="update_profile">Update profile</string>
 </resources>

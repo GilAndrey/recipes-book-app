@@ -1,8 +1,6 @@
 package br.com.fiap.recipes.screens
 
-import android.content.res.Configuration
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Resources
+import android.database.sqlite.SQLiteConstraintException
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
@@ -51,59 +49,52 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.recipes.R
 import br.com.fiap.recipes.model.User
 import br.com.fiap.recipes.navigation.Destination
 import br.com.fiap.recipes.repository.RoomUserRepository
-import java.io.ByteArrayOutputStream
 import br.com.fiap.recipes.ui.theme.RecipesTheme
 import br.com.fiap.recipes.utils.convertBitmapToByteArray
+import br.com.fiap.recipes.utils.convertByteArrayToBitmap
 
 @Composable
-fun SignupScreen(navController: NavHostController) {
+fun ProfileScreen(navController: NavController, email: String?) {
 
     val context = LocalContext.current
+    val userRepository = remember { RoomUserRepository(context) }
+    val user = remember(email) { email?.let { userRepository.getUserByEmail(it) } }
 
     // Criar uma variável que armazenará a imagem padrão do perfil do usuário
-    val placeHolderImage = BitmapFactory
-        .decodeResource(
-            Resources.getSystem(),
+    val placeHolderImage = remember {
+        BitmapFactory.decodeResource(
+            context.resources,
             android.R.drawable.ic_menu_gallery
         )
+    }
 
     // Armazenar a imagem de profile do usuário em uma variável Bitmap
-    var profileImage by remember {
-        mutableStateOf<Bitmap>(placeHolderImage)
+    var profileImage by remember(user) {
+        mutableStateOf<Bitmap>(
+            user?.userImage?.let { convertByteArrayToBitmap(it) } ?: placeHolderImage
+        )
     }
 
     // Criar um lançador de atividade para selecionar Imagem da galeria
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        if (Build.VERSION.SDK_INT < 28) {
-            profileImage = MediaStore
-                .Images
-                .Media
-                .getBitmap(
-                    context.contentResolver,
-                    uri
-                )
-        }
-        else {
-            if (uri != null) {
-                val source = ImageDecoder.createSource(context.contentResolver, uri)
+        uri?.let {
+            if (Build.VERSION.SDK_INT < 28) {
+                profileImage = MediaStore.Images.Media.getBitmap(context.contentResolver, it)
+            } else {
+                val source = ImageDecoder.createSource(context.contentResolver, it)
                 profileImage = ImageDecoder.decodeBitmap(source)
-            }
-            else {
-                profileImage = placeHolderImage
             }
         }
     }
@@ -125,106 +116,82 @@ fun SignupScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TitleComponent()
+            ProfileTitleComponent()
             Spacer(modifier = Modifier.height(48.dp))
-            UserImage(profileImage, launcher)
-            SignupUserForm(navController, profileImage)
+            ProfileUserImage(profileImage, launcher)
+            ProfileUserForm(navController, user, profileImage)
         }
     }
 }
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@Preview
 @Composable
-private fun SignupScreenPreview() {
-    RecipesTheme() {
-        SignupScreen(rememberNavController())
+private fun ProfileScreenPreview() {
+    RecipesTheme {
+        ProfileScreen(navController = rememberNavController(), email = "")
     }
 }
 
 @Composable
-fun TitleComponent(modifier: Modifier = Modifier) {
+fun ProfileTitleComponent(modifier: Modifier = Modifier) {
     Column(
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(R.string.sign_up),
+            text = stringResource(R.string.profile),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleLarge
 
         )
         Text(
-            text = stringResource(R.string.create_account),
+            text = stringResource(R.string.user_profile_details),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleSmall
         )
     }
 }
 
-@Preview(
-    showBackground = true,
-    uiMode = UI_MODE_NIGHT_NO
-)
 @Composable
-private fun TitleComponentPreview() {
-    RecipesTheme() {
-        TitleComponent()
+fun ProfileUserImage(profileImage: Bitmap, launcher: ManagedActivityResultLauncher<String, Uri?>) {
+    Box(
+        modifier = Modifier
+            .size(120.dp)
+    ) {
+        Image(
+            bitmap = profileImage.asImageBitmap(),
+            contentDescription = stringResource(R.string.user_image),
+            modifier = Modifier
+                .clip(shape = CircleShape)
+                .size(100.dp)
+                .align(alignment = Alignment.Center)
+        )
+        Icon(
+            imageVector = Icons.Default.AddAPhoto,
+            contentDescription = stringResource(R.string.add_photo_icon),
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .align(alignment = Alignment.BottomEnd)
+                .clickable(
+                    onClick = {
+                        launcher.launch("image/*")
+                    }
+                )
+        )
     }
 }
 
 @Composable
-fun UserImage(profileImage: Bitmap, launcher: ManagedActivityResultLauncher<String, Uri?>) {
-   Box(
-       modifier = Modifier
-       .size(120.dp)
-   ) {
-       Image(
-           bitmap = profileImage.asImageBitmap(),
-           contentDescription = stringResource(R.string.user_image),
-           modifier = Modifier
-               .clip(shape = CircleShape)
-               .size(100.dp)
-               .align(alignment = Alignment.Center)
-       )
-       Icon(
-           imageVector = Icons.Default.AddAPhoto,
-           contentDescription = stringResource(R.string.add_photo_icon),
-           tint = MaterialTheme.colorScheme.primary,
-           modifier = Modifier
-               .align(alignment = Alignment.BottomEnd)
-               .clickable(
-                   onClick = {
-                       launcher.launch("image/*")
-                   }
-               )
-       )
-   }
-}
+fun ProfileUserForm(navController: NavController, user: User?, profileImage: Bitmap) {
 
-@Preview(showBackground = true)
-@Composable
-private fun UserImagePreview() {
-    RecipesTheme() {
-//        UserImage(profileImage, launcher)
-    }
-}
+    // Device explorer packages - cache, code_cache, files and shared_prefs
+    // Instancia do SharedPreferencesUserRepository : Injeção de dependencia?
+    val userRepository = RoomUserRepository(context = LocalContext.current)
 
-@Composable
-fun SignupUserForm(navController: NavController, profileImage: Bitmap) {
-
-    var name by remember {
-        mutableStateOf("")
-    }
-    var email by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
+    var name by remember(user) { mutableStateOf(user?.name ?: "") }
+    var email by remember(user) { mutableStateOf(user?.email ?: "") }
+    var password by remember(user) { mutableStateOf(user?.password ?: "") }
 
     // Variaveis de estado para verificar se os dados estão corretos
     var isNameError by remember { mutableStateOf(false) }
@@ -247,14 +214,6 @@ fun SignupUserForm(navController: NavController, profileImage: Bitmap) {
 
         return !isNameError && !isEmailError && !isPasswordError
     }
-
-
-
-    // Device explorer packages - cache, code_cache, files and shared_prefs
-    // Instancia do SharedPreferencesUserRepository : Injeção de dependencia?
-    val userRepository =
-        RoomUserRepository(context = LocalContext.current)
-
 
     Column(
         modifier = Modifier
@@ -421,19 +380,21 @@ fun SignupUserForm(navController: NavController, profileImage: Bitmap) {
         Button(
             onClick = {
                 if (validate()) {
-                    val stream = ByteArrayOutputStream()
-                    profileImage.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                    val byteArray = stream.toByteArray()
-
-                    userRepository.saveUser(
-                        User(
-                            name = name,
-                            email = email,
-                            password = password,
-                            userImage = convertBitmapToByteArray(profileImage)
-                        )
+                    val updatedUser = User(
+                        id = user?.id ?: 0,
+                        name = name,
+                        email = email,
+                        password = password,
+                        userImage = convertBitmapToByteArray(profileImage)
                     )
-                    showDialogSuccess = true
+                    try {
+                        userRepository.updateUser(updatedUser)
+                        showDialogSuccess = true
+                    }
+                    catch (e: SQLiteConstraintException) {
+                        isEmailError = true
+                        showDialogError = true
+                    }
                 }
                 else {
                     showDialogError = true
@@ -445,19 +406,19 @@ fun SignupUserForm(navController: NavController, profileImage: Bitmap) {
             shape = RoundedCornerShape(8.dp)
         ) {
             Text(
-                text = stringResource(R.string.create_account),
+                text = stringResource(R.string.update_profile),
                 style = MaterialTheme.typography.labelMedium
             )
         }
         // Caixa de dialogo de sucesso
         if (showDialogSuccess) {
             AlertDialog(
-                onDismissRequest = { showDialogError = false },
+                onDismissRequest = { showDialogSuccess = false },
                 title = {
                     Text(text = "Success")
                 },
                 text = {
-                    Text(text = "Account created successfully")
+                    Text(text = "Account updated successfully")
                 },
                 confirmButton = {
                     TextButton(
@@ -494,13 +455,5 @@ fun SignupUserForm(navController: NavController, profileImage: Bitmap) {
             )
         }
 
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SignupUserFormPreview() {
-    RecipesTheme() {
-//        SignupUserForm(rememberNavController(), profileImage)
     }
 }

@@ -17,7 +17,7 @@ class RoomUserRepository(context: Context): UserRepository {
     }
 
     override fun getUser(id: Int): User {
-        return recipeDatabase.getUserById(1) ?: User()
+        return recipeDatabase.getUserById(id) ?: User()
     }
 
     override fun getUserByEmail(email: String): User? {
@@ -29,5 +29,8 @@ class RoomUserRepository(context: Context): UserRepository {
         return user != null
     }
 
+    override fun updateUser(user: User): Int {
+        return recipeDatabase.update(user)
+    }
 
 }

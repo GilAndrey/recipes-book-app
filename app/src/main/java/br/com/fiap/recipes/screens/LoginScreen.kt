@@ -49,7 +49,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.recipes.R
 import br.com.fiap.recipes.navigation.Destination
-import br.com.fiap.recipes.repository.SharedPreferencesUserRepository
+import br.com.fiap.recipes.repository.RoomUserRepository
 import br.com.fiap.recipes.repository.UserRepository
 import br.com.fiap.recipes.ui.theme.RecipesTheme
 
@@ -137,7 +137,7 @@ fun LoginForm(navController: NavController) {
 
     // Criar uma instancia da classe SharedPreferencesUserRepository
     val userRepository : UserRepository =
-        SharedPreferencesUserRepository(context = LocalContext.current)
+        RoomUserRepository(context = LocalContext.current)
 
     Column(
         modifier = Modifier
