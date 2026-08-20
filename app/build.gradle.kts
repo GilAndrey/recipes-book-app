@@ -55,6 +55,11 @@ dependencies {
     // Navigation Compose dependece androidx-navigation-compose
     implementation(libs.androidx.navigation.compose)
 
+    // Retrofit & Gson
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+
     // Room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)

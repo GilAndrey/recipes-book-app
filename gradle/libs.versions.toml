@@ -9,6 +9,8 @@ activityCompose = "1.9.1"
 kotlin = "2.0.20"
 composeBom = "2024.06.00"
 navigationCompose = "2.9.0"
+retrofit = "2.11.0"
+gson = "2.11.0"
 
 # ROOM
 ksp = "2.0.20-1.0.25"
@@ -33,6 +35,11 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 # Navigation Compose dependecies
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose"}
+
+# Retrofit & Gson
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
