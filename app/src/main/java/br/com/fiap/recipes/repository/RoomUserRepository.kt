@@ -33,4 +33,9 @@ class RoomUserRepository(context: Context): UserRepository {
         return recipeDatabase.update(user)
     }
 
+    override fun delete(user: User): Int {
+        return recipeDatabase.delete(user)
+    }
+
+
 }

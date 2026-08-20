@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -184,6 +185,10 @@ fun ProfileUserImage(profileImage: Bitmap, launcher: ManagedActivityResultLaunch
 
 @Composable
 fun ProfileUserForm(navController: NavController, user: User?, profileImage: Bitmap) {
+
+    var showDeleteDialog by remember {
+        mutableStateOf(false)
+    }
 
     // Device explorer packages - cache, code_cache, files and shared_prefs
     // Instancia do SharedPreferencesUserRepository : Injeção de dependencia?
@@ -410,6 +415,69 @@ fun ProfileUserForm(navController: NavController, user: User?, profileImage: Bit
                 style = MaterialTheme.typography.labelMedium
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botao para deletar
+        Button(
+            onClick = {
+                showDeleteDialog = true
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiary
+            )
+        ) {
+            Text(
+                text = "Delete profile",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onTertiary
+            )
+        }
+
+        if (showDeleteDialog != false) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = {
+                    Text(
+                        text = "User removal"
+                    )
+                },
+                text = {
+                    Text(
+                        text = "Are you sure you want to delete your account?"
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDeleteDialog = false
+                            if (user != null) {
+                                userRepository.delete(user)
+                                navController.navigate(Destination.LoginScreen.route)
+                            }
+                        }
+                    ) {
+                        Text(text = "OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showDeleteDialog = false
+                        }
+                    ) {
+                        Text(text = "Cancel")
+                    }
+                }
+            )
+        }
+
+
+
         // Caixa de dialogo de sucesso
         if (showDialogSuccess) {
             AlertDialog(

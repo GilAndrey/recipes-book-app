@@ -10,5 +10,6 @@ interface UserRepository {
     fun getUserByEmail(email: String): User?
     fun login(email: String, password: String): Boolean
     fun updateUser(user: User): Int
+    fun delete(user: User): Int
 
 }

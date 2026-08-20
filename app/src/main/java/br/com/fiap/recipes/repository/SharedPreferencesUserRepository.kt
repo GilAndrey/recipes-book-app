@@ -45,4 +45,8 @@ class SharedPreferencesUserRepository(context: Context): UserRepository {
         TODO("Not yet implemented")
     }
 
+    override fun delete(user: User): Int {
+        TODO("Not yet implemented")
+    }
+
 }
