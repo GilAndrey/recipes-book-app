@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
+    implementation(libs.coil.compose)
 
     // Room
     implementation(libs.androidx.room.runtime)

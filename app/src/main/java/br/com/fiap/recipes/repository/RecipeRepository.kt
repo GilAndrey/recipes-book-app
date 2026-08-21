@@ -1,11 +1,20 @@
 package br.com.fiap.recipes.repository
 
-import br.com.fiap.recipes.R
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import br.com.fiap.recipes.factory.RetrofitClient
 import br.com.fiap.recipes.model.Category
 import br.com.fiap.recipes.model.DifficultLevel
 import br.com.fiap.recipes.model.Recipe
 import br.com.fiap.recipes.model.User
 import java.time.LocalDate
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import br.com.fiap.recipes.model.RecipeRequest
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 fun getAllRecipes() = listOf<Recipe>(
     Recipe(
@@ -17,7 +26,7 @@ fun getAllRecipes() = listOf<Recipe>(
         description = "Moist, spiced, carrot-filled cake with tangy cream cheese frosting.",
         cookingTime = 60,
         createdAt = LocalDate.now(),
-        image = R.drawable.bolo_cenoura
+        image = "/images/bolo_de_cenoura.jpg"
     ),
     Recipe(
         id = 2,
@@ -28,7 +37,7 @@ fun getAllRecipes() = listOf<Recipe>(
         description = "Refreshing heart of palm salad, light, savory, and subtly sweet.",
         cookingTime = 10,
         createdAt = LocalDate.now(),
-        image = R.drawable.salada_de_palmito
+        image = "/images/salada_de_palmito.png"
     ),
     Recipe(
         id = 3,
@@ -39,33 +48,117 @@ fun getAllRecipes() = listOf<Recipe>(
         description = "Spicy sausage and cheese bread: soft, savory, delicious.",
         cookingTime = 10,
         createdAt = LocalDate.now(),
-        image = R.drawable.pao_calabresa
+        image = "/images/pao_calabresa.jpeg"
     ),
-    Recipe (
+    Recipe(
         id = 4,
         category = Category(id = 5000, name = "Vegetables"),
-        user = User(id = 400, name = "Gil Andrey"),
+        user = User(id = 400, name = "Mariana Dias"),
         difficultLevel = DifficultLevel.ADVANCED,
-        name = "Sopa de legumes",
-        description = "Hearty vegetable soup: warm, nourishing, fresh, wholsome",
+        name = "Sopa de Legumes",
+        description = "Hearty vegetable soup: warm, nourishing, fresh, wholesome goodness.",
         cookingTime = 45,
         createdAt = LocalDate.now(),
-        image = R.drawable.sopa_legumes
+        image = "/images/sopa_legumes.jpg"
     ),
     Recipe(
         id = 5,
         category = Category(id = 2000, name = "Beef"),
-        user = User(id = 500, name = "Josh Green"),
+        user = User(id = 500, name = "Carlos Almeida"),
         difficultLevel = DifficultLevel.ADVANCED,
         name = "Feijoada",
-        description = "Rich, smoky, hearty, bean and meat stew",
+        description = "Rich, smoky, hearty, bean and meat stew.",
         cookingTime = 120,
         createdAt = LocalDate.now(),
-        image = R.drawable.feijoada
+        image = "/images/feijoada.jpg"
     )
 )
 
-fun getRecipesByCategory(id: Int) = getAllRecipes()
-    .filter { recipe ->
-        recipe.category.id == id
+@Composable
+fun getRecipesByCategory(id: Int): List<Recipe> {
+
+    var recipes by remember {
+        mutableStateOf(listOf<Recipe>())
     }
+
+    val callRecipesByCategory = RetrofitClient.getRecipeService().getRecipesByCategory(id)
+
+    callRecipesByCategory.enqueue(object : Callback<List<Recipe>> {
+        override fun onResponse(
+            p0: Call<List<Recipe>?>,
+            response: Response<List<Recipe>?>
+        ) {
+            recipes = response.body()?: emptyList()
+        }
+
+        override fun onFailure(
+            p0: Call<List<Recipe>?>,
+            p1: Throwable
+        ) {
+            println("ERRO -----> ${p1.printStackTrace()}")
+            println(p1.message)
+        }
+    })
+
+    return recipes
+}
+
+@Composable
+fun getLatestRecipes(): List<Recipe> {
+
+    var latestRecipes by remember {
+        mutableStateOf(listOf<Recipe>())
+    }
+
+
+    val callLatestRecipes = RetrofitClient.getRecipeService().getLatestRecipes()
+
+    callLatestRecipes.enqueue(object : Callback<List<Recipe>> {
+        override fun onResponse(
+            p0: Call<List<Recipe>?>,
+            response: Response<List<Recipe>?>
+        ) {
+            latestRecipes = response.body() ?: emptyList()
+        }
+
+        override fun onFailure(p0: Call<List<Recipe>?>, p1: Throwable) {
+            println(p1.message)
+        }
+
+
+    })
+    return latestRecipes
+}
+
+
+fun saveRecipe(recipeRequest: RecipeRequest): RecipeRequest? {
+
+    var newRecipe: RecipeRequest? = RecipeRequest()
+    val callNewRecipe = RetrofitClient.getRecipeService().saveRecipe(recipeRequest)
+
+    callNewRecipe.enqueue(object : Callback<RecipeRequest> {
+        override fun onResponse(
+            p0: Call<RecipeRequest?>,
+            response: Response<RecipeRequest>
+        ) {
+            newRecipe = response.body() ?: null
+        }
+
+        override fun onFailure(
+            p0: Call<RecipeRequest?>,
+            p1: Throwable
+        ) {
+            println(p1.message)
+        }
+
+
+    })
+    return newRecipe
+}
+
+
+//fun getRecipesByCategory(id: Int) = getAllRecipes()
+//    .filter { recipe ->
+//        recipe.category.id == id
+//    }
+

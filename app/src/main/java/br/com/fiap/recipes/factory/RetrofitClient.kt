@@ -1,6 +1,7 @@
 package br.com.fiap.recipes.factory
 
 import br.com.fiap.recipes.service.CategoryService
+import br.com.fiap.recipes.service.RecipeService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
@@ -20,6 +21,10 @@ object RetrofitClient {
 
     fun getCategoryService(): CategoryService {
         return retrofit.create(CategoryService::class.java)
+    }
+
+    fun getRecipeService(): RecipeService {
+        return retrofit.create(RecipeService::class.java)
     }
 
 }

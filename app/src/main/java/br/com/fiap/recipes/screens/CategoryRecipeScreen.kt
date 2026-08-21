@@ -40,15 +40,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import br.com.fiap.recipes.R
+import br.com.fiap.recipes.factory.RetrofitClient
 import br.com.fiap.recipes.model.Recipe
 import br.com.fiap.recipes.navigation.Destination
 import br.com.fiap.recipes.repository.getAllRecipes
 import br.com.fiap.recipes.repository.getCategoryById
 import br.com.fiap.recipes.repository.getRecipesByCategory
 import br.com.fiap.recipes.ui.theme.RecipesTheme
+import coil.compose.AsyncImage
 
 @Composable
 fun CategoryRecipeScreen(categoryId: Int?, navController: NavHostController?) {
@@ -61,7 +62,7 @@ fun CategoryRecipeScreen(categoryId: Int?, navController: NavHostController?) {
 
     when (recipesByCategory.size) {
         0 -> {
-            categoryName = getCategoryById(categoryId)!!.name
+            categoryName = "" // getCategoryById(categoryId)!!.name
         }
 
         else -> {
@@ -175,6 +176,8 @@ fun CategoryRecipeScreen(categoryId: Int?, navController: NavHostController?) {
 
 @Composable
 fun CategoryRecipe(recipe: Recipe) {
+
+    val baseUrl = RetrofitClient.BASE_URL.plus("recipes")
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -189,8 +192,8 @@ fun CategoryRecipe(recipe: Recipe) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Image(
-                painter = painterResource(recipe.image!!),
+            AsyncImage(
+                model = baseUrl.plus(recipe.image),
                 contentDescription = "",
                 modifier = Modifier.weight(1f),
                 contentScale = ContentScale.Crop
